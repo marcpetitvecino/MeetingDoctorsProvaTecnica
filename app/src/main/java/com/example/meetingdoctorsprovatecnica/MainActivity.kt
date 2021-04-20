@@ -6,19 +6,21 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
 import java.util.*
 
-private const val FIRST_FILE_NAME = "alice29.txt"
-private const val SECOND_FILE_NAME = "Nombres.txt"
-private const val THIRD_FILE_NAME = "plrabn12.txt"
+private const val FIRST_FILE_NAME = "com\\example\\meetingdoctorsprovatecnica\\files\\alice29.txt"
+private const val SECOND_FILE_NAME = "com\\example\\meetingdoctorsprovatecnica\\files\\Nombres.txt"
+private const val THIRD_FILE_NAME = "com\\example\\meetingdoctorsprovatecnica\\files\\plrabn12.txt"
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var loadButton: AppCompatButton
     private lateinit var list: RecyclerView
     private lateinit var adapter: Adapter
+    private var running = false
 
     private var firstFileContent: String? = null
     private var secondFileContent: String? = null
@@ -29,9 +31,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initViews()
-        GlobalScope.launch {
-            adapter = Adapter(getFilesContent().toList())
-        }
+        setListeners()
     }
 
     private fun initViews() {
@@ -39,14 +39,52 @@ class MainActivity : AppCompatActivity() {
         list = findViewById(R.id.list)
     }
 
+
+    private fun setListeners() {
+        loadButton.setOnClickListener {
+            if (!running) loadList()
+        }
+    }
+
+    private fun loadList() {
+        running = true
+        GlobalScope.launch {
+            adapter = Adapter(getFilesContent().toList())
+            list.adapter = adapter
+        }
+        adapter = Adapter(listOf("Loading..."))
+        list.adapter = adapter
+        running = false
+    }
+
+
     private fun getFilesContent(): LinkedList<String?> {
-        firstFileContent = MainActivity::class.java.getResource(FIRST_FILE_NAME)?.readText()
-        secondFileContent = MainActivity::class.java.getResource(SECOND_FILE_NAME)?.readText()
-        thirdFileContent = MainActivity::class.java.getResource(THIRD_FILE_NAME)?.readText()
+        var bufferedReader: BufferedReader = File(FIRST_FILE_NAME).bufferedReader()
         val list = LinkedList<String?>()
-        list.add(firstFileContent)
-        list.add(secondFileContent)
-        list.add(thirdFileContent)
+
+        GlobalScope.launch {
+            bufferedReader.useLines {
+                firstFileContent = it.toString()
+                list.add(firstFileContent)
+                }
+            }
+
+        GlobalScope.launch {
+            bufferedReader = File(SECOND_FILE_NAME).bufferedReader()
+            bufferedReader.useLines {
+                    secondFileContent = it.toString()
+                    list.add(secondFileContent)
+            }
+        }
+
+        GlobalScope.launch {
+            bufferedReader = File(THIRD_FILE_NAME).bufferedReader()
+            bufferedReader.useLines {
+                thirdFileContent = it.toString()
+                list.add(thirdFileContent)
+            }
+        }
+
         return list
     }
 
