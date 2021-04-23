@@ -2,14 +2,8 @@ package com.example.meetingdoctorsprovatecnica
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.*
-import java.io.BufferedReader
-import java.io.File
-import java.io.InputStream
-import java.io.InputStreamReader
 import java.util.*
 
 private const val FIRST_FILE_NAME = "alice29.txt"
@@ -23,9 +17,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: Adapter
     private var running = false
 
-    private var firstFileContent: String? = null
-    private var secondFileContent: String? = null
-    private var thirdFileContent: String? = null
+    private lateinit var firstFileContent: List<String?>
+    private lateinit var secondFileContent: List<String?>
+    private lateinit var thirdFileContent: List<String?>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,32 +43,58 @@ class MainActivity : AppCompatActivity() {
 
     private  fun loadList() {
         running = true
-        adapter = Adapter(listOf("Loading..."))
+        adapter = Adapter(listOf(listOf("Loading...")))
         wordList.adapter = adapter
 
         adapter = Adapter(getFilesContent())
         wordList.adapter = adapter
+        running = false
     }
 
-    private fun getFilesContent(): LinkedList<String?> {
-        val list = LinkedList<String?>()
+    private fun getFilesContent(): List<List<String?>> {
 
         application.assets.open(FIRST_FILE_NAME).bufferedReader().use {
-            firstFileContent = it.readText()
+            var text = it.readText()
+            text = removeUnwantedChars(text)
+            firstFileContent = text.split(" ").distinct()
         }
 
         application.assets.open(SECOND_FILE_NAME).bufferedReader().use {
-            secondFileContent = it.readText()
+            var text = it.readText()
+            text = removeUnwantedChars(text)
+            secondFileContent = text.split(" ").distinctBy { ti -> ti.toLowerCase(Locale.getDefault()) }
         }
 
         application.assets.open(THIRD_FILE_NAME).bufferedReader().use {
-            thirdFileContent = it.readText()
+            var text = it.readText()
+            text = removeUnwantedChars(text)
+            thirdFileContent = text.split(" ").distinct()
         }
 
-        list.add(firstFileContent)
-        list.add(secondFileContent)
-        list.add(thirdFileContent)
-        return list
+        return listOf(firstFileContent, secondFileContent, thirdFileContent)
+    }
+
+    private fun removeUnwantedChars(text: String): String {
+        var newText = text.replace("\n", " ")
+        newText = newText.replace(",", "")
+        newText = newText.replace(".", "")
+        newText = newText.replace("(", "")
+        newText = newText.replace(")", "")
+        newText = newText.replace(":", "")
+        newText = newText.replace(";", "")
+        newText = newText.replace("?", "")
+        newText = newText.replace("-", "")
+        newText = newText.replace("1", "")
+        newText = newText.replace("2", "")
+        newText = newText.replace("3", "")
+        newText = newText.replace("4", "")
+        newText = newText.replace("5", "")
+        newText = newText.replace("6", "")
+        newText = newText.replace("7", "")
+        newText = newText.replace("8", "")
+        newText = newText.replace("9", "")
+        newText = newText.replace("10", "")
+        return newText
     }
 
 }
