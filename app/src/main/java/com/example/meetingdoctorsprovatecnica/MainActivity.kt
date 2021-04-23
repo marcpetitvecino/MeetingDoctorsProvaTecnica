@@ -43,11 +43,17 @@ class MainActivity : AppCompatActivity() {
 
     private  fun loadList() {
         running = true
-        adapter = Adapter(listOf(listOf("Loading...")))
+        adapter = Adapter(listOf("Loading..."))
         wordList.adapter = adapter
 
-        adapter = Adapter(getFilesContent())
+        val megaList = getFilesContent()
+
+        megaList[0].toMutableList().addAll(megaList[1])
+        megaList[0].toMutableList().addAll(megaList[2])
+
+        adapter = Adapter(megaList[0])
         wordList.adapter = adapter
+        adapter.notifyDataSetChanged()
         running = false
     }
 
