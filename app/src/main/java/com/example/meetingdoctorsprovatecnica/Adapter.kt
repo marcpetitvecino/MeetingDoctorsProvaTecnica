@@ -13,7 +13,11 @@ class Adapter(private val list: List<String?>): RecyclerView.Adapter<ViewHolder>
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.textTV.text = list[position]
+        var sameWordcount: Int = 0
+        list.forEach {
+            if (list[position].equals(it, ignoreCase = true)) sameWordcount++
+        }
+        holder.textTV.text = "${list[position]} - Appears $sameWordcount times"
     }
 
 }
