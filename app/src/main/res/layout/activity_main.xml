@@ -15,13 +15,49 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/totalWordCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/loadBtn"
+        android:layout_marginStart="15dp"
+        android:layout_marginLeft="15dp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/firstListWordCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/totalWordCount"
+        android:layout_marginStart="15dp"
+        android:layout_marginLeft="15dp"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/secondListWordCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/firstListWordCount"
+        android:layout_marginStart="15dp"
+        android:layout_marginLeft="15dp"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/thirdListWordCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/secondListWordCount"
+        android:layout_marginStart="15dp"
+        android:layout_marginLeft="15dp"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loadBtn">
+        app:layout_constraintTop_toBottomOf="@+id/thirdListWordCount">
 
     </androidx.recyclerview.widget.RecyclerView>
 

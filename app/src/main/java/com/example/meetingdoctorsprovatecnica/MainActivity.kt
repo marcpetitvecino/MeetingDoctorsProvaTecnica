@@ -3,6 +3,7 @@ package com.example.meetingdoctorsprovatecnica
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 
@@ -16,6 +17,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var wordList: RecyclerView
     private lateinit var adapter: Adapter
     private var running = false
+
+    private lateinit var totalWordCount: AppCompatTextView
+    private lateinit var firstWordCount: AppCompatTextView
+    private lateinit var secondWordCount: AppCompatTextView
+    private lateinit var thirdWordCount: AppCompatTextView
 
     private lateinit var firstFileContent: List<String?>
     private lateinit var secondFileContent: List<String?>
@@ -32,6 +38,10 @@ class MainActivity : AppCompatActivity() {
     private fun initViews() {
         loadButton = findViewById(R.id.loadBtn)
         wordList = findViewById(R.id.list)
+        totalWordCount = findViewById(R.id.totalWordCount)
+        firstWordCount = findViewById(R.id.firstListWordCount)
+        secondWordCount = findViewById(R.id.secondListWordCount)
+        thirdWordCount = findViewById(R.id.thirdListWordCount)
     }
 
 
@@ -48,13 +58,18 @@ class MainActivity : AppCompatActivity() {
 
         val megaList = getFilesContent()
 
-        megaList[0].toMutableList().addAll(megaList[1])
-        megaList[0].toMutableList().addAll(megaList[2])
+        val adapterList = megaList[0].union(megaList[1].union(megaList[2])).toList()
 
-        adapter = Adapter(megaList[0])
+        adapter = Adapter(adapterList)
         wordList.adapter = adapter
         adapter.notifyDataSetChanged()
         running = false
+
+        totalWordCount.text = "There are a total of ${adapterList.size} words"
+        firstWordCount.text = "The file $FIRST_FILE_NAME has a total of ${firstFileContent.size} words"
+        secondWordCount.text = "The file $SECOND_FILE_NAME has a total of ${secondFileContent.size} words"
+        thirdWordCount.text = "The file $THIRD_FILE_NAME has a total of ${thirdFileContent.size} words"
+
     }
 
     private fun getFilesContent(): List<List<String?>> {
