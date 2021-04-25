@@ -2,8 +2,14 @@ package com.example.meetingdoctorsprovatecnica
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 
@@ -27,12 +33,75 @@ class MainActivity : AppCompatActivity() {
     private lateinit var secondFileContent: List<String?>
     private lateinit var thirdFileContent: List<String?>
 
+    val waitingTime = 200L
+    private lateinit var countDownTimer: CountDownTimer
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initViews()
         setListeners()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        val searchView = menu?.findItem(R.id.searchView)?.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                TODO("Not yet implemented")
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let { searchText ->
+                //    countDownTimer = object : CountDownTimer(waitingTime, 500) {
+
+                //       override fun onTick(millisUntilFinished: Long) {
+                //           Log.d("Tick", millisUntilFinished.toString())
+                //       }
+
+                //       override fun onFinish() {
+                //           if (it.length > 1 && !firstFileContent.isNullOrEmpty()) searchWords(newText)
+                //           countDownTimer.cancel()
+                //       }
+                //   }
+                    if (searchText.length > 1 && !firstFileContent.isNullOrEmpty()) {
+                        loadAdapter(emptyList())
+                        searchWords(newText)
+                    }
+                }
+                //countDownTimer.start()
+                return false
+            }
+        })
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun searchWords(text: String) {
+        loadList(text)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.orderByPosition -> orderByPosition()
+            R.id.orderAlphabetically -> orderAlphabetically()
+            R.id.orderByApparitions -> orderByApparitions()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun orderByApparitions() {
+        Toast.makeText(this, "Not implemented", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun orderAlphabetically() {
+        loadList(orderType = "alphabetically")
+    }
+
+    private fun orderByPosition() {
+        loadList(orderType = "position")
     }
 
     private fun initViews() {
@@ -51,18 +120,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private  fun loadList() {
+    private fun loadList(text: String = "", orderType: String = "position") {
         running = true
-        adapter = Adapter(listOf("Loading..."))
-        wordList.adapter = adapter
-
+        loadAdapter(listOf("Loading..."))
         val megaList = getFilesContent()
 
-        val adapterList = megaList[0].union(megaList[1].union(megaList[2])).toList()
+        var adapterList = when (orderType) {
+                "position" -> megaList[0].union(megaList[1].union(megaList[2])).toList()
+                "alphabetically" -> megaList[0].union(megaList[1].union(megaList[2])).toList().sortedBy { if (!firstFileContent.isNullOrEmpty() && it != "") it?.get(0).toString() else "" }
+                //"apparitions" -> getApparitions(megaList[0].union(megaList[1].union(megaList[2])).toList()) // Not implemented
+                else -> megaList[0].union(megaList[1].union(megaList[2])).toList()
+            }
 
-        adapter = Adapter(adapterList)
-        wordList.adapter = adapter
-        adapter.notifyDataSetChanged()
+        if ("" != text) {
+            val adapterListMutable = adapterList.toMutableList()
+            adapterList.forEachIndexed { index, s ->
+                s?.let {
+                    if (!it.toUpperCase().contains(text.toUpperCase())) {
+                        try {
+                            adapterListMutable.removeAt(index)
+                        } catch (exception: IndexOutOfBoundsException) {
+                            Log.e("ErrorAdapter", "OUT OF BOUNDS")
+                        }
+                    }
+                }
+            }
+            adapterList = adapterListMutable.toList()
+        }
+        // En el search el enfoque logico es correcto pero no se que pasa con la lista
+
+        loadAdapter(adapterList)
         running = false
 
         totalWordCount.text = "There are a total of ${adapterList.size} words"
@@ -95,9 +182,17 @@ class MainActivity : AppCompatActivity() {
         return listOf(firstFileContent, secondFileContent, thirdFileContent)
     }
 
+    private fun loadAdapter(list: List<String?>) {
+        adapter = Adapter(list)
+        wordList.adapter = adapter
+        adapter.notifyDataSetChanged()
+    }
+
     private fun removeUnwantedChars(text: String): String {
         var newText = text.replace("\n", " ")
         newText = newText.replace(",", "")
+        newText = newText.replace("$", "")
+        newText = newText.replace("-", "")
         newText = newText.replace(".", "")
         newText = newText.replace("(", "")
         newText = newText.replace(")", "")
@@ -105,6 +200,9 @@ class MainActivity : AppCompatActivity() {
         newText = newText.replace(";", "")
         newText = newText.replace("?", "")
         newText = newText.replace("-", "")
+        newText = newText.replace("*", "")
+        newText = newText.replace("'", "")
+        newText = newText.replace("\"", "")
         newText = newText.replace("1", "")
         newText = newText.replace("2", "")
         newText = newText.replace("3", "")
@@ -114,7 +212,7 @@ class MainActivity : AppCompatActivity() {
         newText = newText.replace("7", "")
         newText = newText.replace("8", "")
         newText = newText.replace("9", "")
-        newText = newText.replace("10", "")
+        newText = newText.replace("0", "")
         return newText
     }
 

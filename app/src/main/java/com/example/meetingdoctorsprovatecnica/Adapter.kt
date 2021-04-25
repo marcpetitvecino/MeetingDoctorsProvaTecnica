@@ -13,7 +13,7 @@ class Adapter(private val list: List<String?>): RecyclerView.Adapter<ViewHolder>
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        var sameWordcount: Int = 0
+        var sameWordcount = 0
         list.forEach {
             if (list[position].equals(it, ignoreCase = true)) sameWordcount++
         }

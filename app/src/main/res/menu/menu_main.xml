@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<item
+    android:id="@+id/searchView"
+    android:title="Search"
+    app:actionViewClass="androidx.appcompat.widget.SearchView"
+    android:icon="@drawable/ic_search"
+    app:showAsAction="ifRoom"
+    />
+
+<item
+    android:id="@+id/orderBtn"
+    android:title="Order"
+    android:icon="@drawable/ic_filters"
+    app:showAsAction="always">
+
+    <menu>
+        <item
+            android:id="@+id/orderByPosition"
+            android:title="Order by position"
+            app:showAsAction="never"/>
+
+        <item
+            android:id="@+id/orderAlphabetically"
+            android:title="Order alphabetically"
+            app:showAsAction="never"/>
+
+        <item
+            android:id="@+id/orderByApparitions"
+            android:title="Order by apparitions"
+            app:showAsAction="never"/>
+
+    </menu>
+</item>
+</menu>
